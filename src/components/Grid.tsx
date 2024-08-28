@@ -6,24 +6,35 @@ import { HEIGHT, WIDTH } from "@/utils/constants";
 import { computeNextBoard, drawBoard, toggleSquare } from "@/utils/functions";
 import { GridContext } from "@/server/api";
 
+/**
+ * Grid component responsible for rendering and managing the Game of Life grid.
+ *
+ * Core component of the Game Of Life application, renders a canvas element and manages the board state update when isPlaying is true.
+ *
+ * @component
+ * @example
+ * return (
+ *   <Grid />
+ * )
+ */
 const Grid = () => {
   const { boardState, setBoardState, isPlaying } = useContext(GridContext);
 
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
 
-  const nextBoardIteration = (iterations: number = 1) => {
-    setBoardState((prevBoardState) => {
-      return computeNextBoard(iterations, prevBoardState);
-    });
-  };
-
   useEffect(() => {
     if (!isPlaying) return;
 
-    const interval = setInterval(nextBoardIteration, 100);
+    const interval = setInterval(
+      () =>
+        setBoardState((prevBoardState) => {
+          return computeNextBoard(1, prevBoardState);
+        }),
+      100
+    );
 
     return () => clearInterval(interval);
-  }, [isPlaying, nextBoardIteration]);
+  }, [isPlaying]);
 
   useEffect(() => {
     if (canvasRef.current) {

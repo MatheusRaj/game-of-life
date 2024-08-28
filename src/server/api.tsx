@@ -18,6 +18,13 @@ interface Props {
   children: React.ReactElement;
 }
 
+/**
+ * Provides the grid state and controls for the Game of Life.
+ *
+ * @component
+ * @param {Props} props - The children components to be wrapped by the provider.
+ * @returns {JSX.Element} The GridContext provider wrapping the children components.
+ */
 export const GridContexProvider = ({ children }: Props) => {
   const board = createBoard(NUM_ROWS, NUM_COLS);
   const [boardState, setBoardState] = useState<Board>(board);
