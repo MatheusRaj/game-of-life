@@ -1,131 +1,59 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   CELL_SIZE,
-  COLORS,
   HEIGHT,
   NUM_COLS,
   NUM_ROWS,
   WIDTH,
 } from "@/utils/constants";
-
-type Board = number[][];
-
-const createBoard = (rows: number, cols: number) => {
-  return Array.from({ length: rows }, () => new Array(cols).fill(0));
-};
+import { Board } from "@/utils/types";
+import { computeNextBoard, createBoard, drawBoard } from "@/utils/functions";
 
 const Grid = () => {
-  const board = useMemo<Board>(() => createBoard(NUM_ROWS, NUM_COLS), []);
+  const board = createBoard(NUM_ROWS, NUM_COLS);
   const [boardState, setBoardState] = useState<Board>(board);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [iterations, setIterations] = useState<number>(1);
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
 
-  const countAlive = (r0: number, c0: number, currentBoardState: Board) => {
-    let count = 0;
-    for (let dr = -1; dr <= 1; dr++) {
-      for (let dc = -1; dc <= 1; dc++) {
-        if (dr != 0 || dc != 0) {
-          const r = (r0 + dr + NUM_ROWS) % NUM_ROWS;
-          const c = (c0 + dc + NUM_COLS) % NUM_COLS;
-
-          if (currentBoardState[r][c] === 1) {
-            count++;
-          }
-        }
-      }
-    }
-
-    return count;
-  };
-
-  const computeNextBoard = (iterations: number = 1) => {
+  const nextBoardIteration = (iterations: number = 1) => {
     setBoardState((prevBoardState) => {
-      let newBoardState = prevBoardState.map((r) => [...r]);
-
-      for (let i = 0; i < iterations; i++) {
-        const tempBoardState = newBoardState.map((r) => [...r]);
-
-        for (let r = 0; r < NUM_ROWS; r++) {
-          for (let c = 0; c < NUM_COLS; c++) {
-            const aliveCount = countAlive(r, c, newBoardState);
-
-            if (newBoardState[r][c] === 0) {
-              if (aliveCount === 3) {
-                tempBoardState[r][c] = 1;
-              }
-            } else {
-              if (aliveCount !== 2 && aliveCount !== 3) {
-                tempBoardState[r][c] = 0;
-              }
-            }
-          }
-        }
-
-        newBoardState = tempBoardState.map((r) => [...r]);
-      }
-
-      return newBoardState;
+      return computeNextBoard(iterations, prevBoardState);
     });
   };
 
   useEffect(() => {
     if (!isPlaying) return;
 
-    const interval = setInterval(computeNextBoard, 100);
+    const interval = setInterval(nextBoardIteration, 100);
 
     return () => clearInterval(interval);
-  }, [isPlaying, computeNextBoard]);
+  }, [isPlaying, nextBoardIteration]);
 
   useEffect(() => {
     if (canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d");
-
-      if (!ctx) return;
-
-      ctx.clearRect(0, 0, WIDTH, HEIGHT);
-      ctx.strokeStyle = "green";
-      ctx.lineWidth = 0.1;
-
-      for (let row = 0; row < NUM_ROWS; row++) {
-        for (let col = 0; col < NUM_COLS; col++) {
-          ctx.fillStyle = COLORS[boardState[row][col]];
-
-          ctx.fillRect(
-            Math.floor((WIDTH / NUM_ROWS) * row),
-            Math.floor((HEIGHT / NUM_COLS) * col),
-            CELL_SIZE,
-            CELL_SIZE
-          );
-
-          ctx.strokeRect(
-            Math.floor((WIDTH / NUM_ROWS) * row),
-            Math.floor((HEIGHT / NUM_COLS) * col),
-            CELL_SIZE,
-            CELL_SIZE
-          );
-        }
-      }
+      drawBoard(canvasRef.current, boardState);
     }
   }, [boardState]);
 
   return (
     <div className="flex flex-col">
       <div className="flex justify-center space-x-4 mb-4">
+        <button onClick={() => setBoardState(createBoard(NUM_ROWS, NUM_COLS))}>
+          Reset
+        </button>
         <button onClick={() => setIsPlaying(!isPlaying)}>
           {isPlaying ? "Pause" : "Play"}
         </button>
-        <button onClick={() => computeNextBoard(iterations)}>Next</button>
+        <button onClick={() => nextBoardIteration(iterations)}>Next</button>
         <input
           className="text-black w-20 rounded-md pl-2 focus:outline-none"
           type="number"
           value={iterations}
           onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
-            console.log("EVENT: ", ev.target.value);
-
             setIterations(Number(ev.target.value));
           }}
         />
