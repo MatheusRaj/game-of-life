@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Game of Life
 
-## Getting Started
+This is a simple implementation of Conway's Game of Life using React, TypeScript, and Next.js. The application features a grid-based interface where you can simulate cellular automaton behavior.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Grid Interface**: An interactive grid to toggle cell states (alive or dead).
+- **Play/Pause Simulation**: Start or pause the simulation.
+- **Step-by-Step Simulation**: Advance the simulation by a specified number of iterations.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository:**
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+   ```bash
+   git clone https://github.com/MatheusRaj/game-of-life
+   cd game-of-life
+   ```
 
-## Learn More
+2. **Install dependencies:**
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   pnpm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Run the development server:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   ```bash
+   pnpm dev
+   ```
 
-## Deploy on Vercel
+4. **Run tests:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   pnpm test
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+5. **Build the application for production:**
+
+   ```bash
+   pnpm build
+   ```
+
+6. **Start the production server:**
+
+   ```bash
+   pnpm start
+   ```
+
+## Project Structure
+
+- `app/`: Next.js pages, with `layout.tsx` as the main entry point.
+- `components/`: Contains React components such as `Grid` and `Controls`.
+- `server/`: Simulates a back-end API for the components, utilizing React's built-in Context API.
+- `utils/`: Utility functions and constants, including game logic and types.
+- `__tests__/`: Test files for unit testing functions and components.
+
+## Usage
+
+1. **Grid Interaction**: Click on cells in the grid to toggle their state.
+2. **Controls**:
+   - **Reset**: Clear the grid.
+   - **Play/Pause**: Start or stop the simulation.
+   - **Next**: Advance the simulation by a specified number of steps.
+
+## Technologies Used
+
+- **Next.js**: A React framework for server-side rendering and static site generation.
+- **React**: A JavaScript library for building user interfaces.
+- **TypeScript**: A superset of JavaScript for static type checking.
+- **Jest**: A testing framework for unit tests.
+- **Tailwind CSS**: A utility-first CSS framework for styling.
