@@ -1,4 +1,8 @@
+"use client";
+
+import Controls from "@/components/Controls";
 import Grid from "@/components/Grid";
+import { GridContexProvider } from "@/server/api";
 
 export default function Home() {
   return (
@@ -7,7 +11,13 @@ export default function Home() {
         The Game of Life
       </h1>
 
-      <Grid />
+      <GridContexProvider>
+        <>
+          <Controls />
+
+          <Grid />
+        </>
+      </GridContexProvider>
     </main>
   );
 }

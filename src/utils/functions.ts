@@ -94,3 +94,17 @@ export const computeNextBoard = (
 
   return newBoardState;
 };
+
+export const toggleSquare = (
+  e: React.MouseEvent<HTMLCanvasElement, MouseEvent>,
+  boardState: Board
+) => {
+  const x = Math.floor(e.nativeEvent.offsetX / CELL_SIZE);
+  const y = Math.floor(e.nativeEvent.offsetY / CELL_SIZE);
+
+  const newBoardState = [...boardState];
+
+  newBoardState[x][y] = boardState[x][y] ? 0 : 1;
+
+  return newBoardState;
+};
