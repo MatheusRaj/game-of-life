@@ -19,10 +19,59 @@ const createBoard = (rows: number, cols: number) => {
 
 const Grid = () => {
   const board = useMemo<Board>(() => createBoard(NUM_ROWS, NUM_COLS), []);
-
   const [boardState, setBoardState] = useState<Board>(board);
-
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
+
+  const countAlive = (r0: number, c0: number) => {
+    let count = 0;
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        if (dr != 0 || dc != 0) {
+          const r = (r0 + dr + NUM_ROWS) % NUM_ROWS;
+          const c = (c0 + dc + NUM_COLS) % NUM_COLS;
+
+          if (boardState[r][c] === 1) {
+            count++;
+          }
+        }
+      }
+    }
+
+    return count;
+  };
+
+  const computeNextBoard = () => {
+    setBoardState((prevBoardState) => {
+      const newBoardState = prevBoardState.map((r) => [...r]);
+
+      for (let r = 0; r < NUM_ROWS; r++) {
+        for (let c = 0; c < NUM_COLS; c++) {
+          const aliveCount = countAlive(r, c);
+
+          if (prevBoardState[r][c] === 0) {
+            if (aliveCount === 3) {
+              newBoardState[r][c] = 1;
+            }
+          } else {
+            if (aliveCount !== 2 && aliveCount !== 3) {
+              newBoardState[r][c] = 0;
+            }
+          }
+        }
+      }
+
+      return newBoardState;
+    });
+  };
+
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const interval = setInterval(computeNextBoard, 100);
+
+    return () => clearInterval(interval);
+  }, [isPlaying, computeNextBoard]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -57,7 +106,14 @@ const Grid = () => {
   }, [boardState]);
 
   return (
-    <div className="flex justify-around">
+    <div className="flex flex-col">
+      <div className="flex justify-center space-x-4 mb-4">
+        <button onClick={() => setIsPlaying(!isPlaying)}>
+          {isPlaying ? "Pause" : "Play"}
+        </button>
+        <button onClick={() => computeNextBoard()}>Next</button>
+      </div>
+
       <canvas
         onClick={(e) => {
           const x = Math.floor(e.nativeEvent.offsetX / CELL_SIZE);
